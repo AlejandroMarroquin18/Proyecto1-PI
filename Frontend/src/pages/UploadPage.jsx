@@ -1,11 +1,12 @@
 import React, { useState } from "react";
-import { Box, Button, Typography, Card, CardContent } from "@mui/material";
+import { Box, Button, Typography, Card, CardContent, Alert } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
 const UploadPage = ({ setSummary }) => {
   const [pdfUploaded, setPdfUploaded] = useState(false); // Estado para verificar si el PDF ha sido subido
   const [selectedFile, setSelectedFile] = useState(null); // Estado para almacenar el archivo seleccionado
   const [loading, setLoading] = useState(false); // Estado para verificar si está procesando el resumen
+  const [error, setError] = useState(""); // Estado para almacenar mensajes de error
   const [dragActive, setDragActive] = useState(false); // Estado para el estado activo del drag
   const navigate = useNavigate();
 
@@ -15,9 +16,10 @@ const UploadPage = ({ setSummary }) => {
     if (file && file.type === "application/pdf") {
       setSelectedFile(file); // Guardar el archivo PDF seleccionado
       setPdfUploaded(true); // Marcar el PDF como subido
+      setError(""); // Limpiar cualquier error anterior
       setDragActive(false);
     } else {
-      alert("Por favor, selecciona un archivo PDF.");
+      setError("Por favor, selecciona un archivo PDF válido.");
       setPdfUploaded(false);
     }
   };
@@ -38,21 +40,33 @@ const UploadPage = ({ setSummary }) => {
     if (file && file.type === "application/pdf") {
       setSelectedFile(file); // Guardar el archivo PDF soltado
       setPdfUploaded(true); // Marcar el PDF como subido
+      setError(""); // Limpiar cualquier error anterior
       setDragActive(false);
     } else {
-      alert("Por favor, selecciona un archivo PDF.");
+      setError("Por favor, selecciona un archivo PDF válido.");
       setPdfUploaded(false);
     }
   };
 
   // Función para generar el resumen
   const handleGenerateSummary = () => {
+    if (!pdfUploaded) {
+      setError("No se ha subido un archivo válido para generar el resumen.");
+      return;
+    }
+
     setLoading(true);
     setTimeout(() => {
-      const generatedSummary = "Este es un resumen simulado del PDF cargado.";
-      setSummary(generatedSummary); // Establecer el resumen en el estado de la aplicación
-      setLoading(false);
-      navigate("/resumen"); // Redirigir a la página de resumen
+      // Simulación de generación de resumen, podría manejar errores aquí
+      if (selectedFile.size > 0) {
+        const generatedSummary = "Este es un resumen simulado del PDF cargado.";
+        setSummary(generatedSummary); // Establecer el resumen en el estado de la aplicación
+        setLoading(false);
+        navigate("/resumen"); // Redirigir a la página de resumen
+      } else {
+        setError("Hubo un problema con el archivo. Intenta subir otro archivo.");
+        setLoading(false);
+      }
     }, 2000);
   };
 
@@ -66,6 +80,14 @@ const UploadPage = ({ setSummary }) => {
           <Typography variant="h6" gutterBottom>
             Añade un archivo PDF para empezar
           </Typography>
+
+          {/* Mostrar mensajes de error si los hay */}
+          {error && (
+            <Alert severity="error" sx={{ marginBottom: 2 }}>
+              {error}
+            </Alert>
+          )}
+
           <Box
             sx={{
               border: dragActive ? "2px dashed #4A90E2" : "2px dashed #ccc",
@@ -73,7 +95,7 @@ const UploadPage = ({ setSummary }) => {
               textAlign: "center",
               borderRadius: "8px",
               marginBottom: "20px",
-              backgroundColor: dragActive ? "#E3F2FD" : "transparent", // Cambiar fondo cuando está en modo drag
+              backgroundColor: dragActive ? "#E3F2FD" : "transparent", 
             }}
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
@@ -101,7 +123,7 @@ const UploadPage = ({ setSummary }) => {
                 {pdfUploaded ? "PDF Subido" : "Subir PDF"}
               </Button>
             </label>
-            
+
             {/* Botón para generar el resumen */}
             <Button
               variant="contained"
