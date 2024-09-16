@@ -1,26 +1,50 @@
 const express = require('express');
+const { procesarPDF } = require('./controllers/pdfController');  // Controlador para procesar PDFs
 const axios = require('axios');
 const dotenv = require('dotenv');
-
-const app = express();
+const multer = require('multer');  
+const path = require('path');     
 
 dotenv.config();
 
+const app = express();
+const PORT = process.env.PORT || 3000;
+
 // Middleware para manejar JSON en las solicitudes
 app.use(express.json());
-const PORT = process.env.PORT || 3000;
-// Ruta raíz
-app.get('/', (req, res) => {
-  res.send('Holap');
+
+// Configuración de multer para subir archivos
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'uploads/');
+  },
+  filename: (req, file, cb) => {
+    cb(null, `${Date.now()}-${file.originalname}`);
+  },
+});
+const upload = multer({ 
+  storage: storage, 
+  fileFilter: (req, file, cb) => {
+    const ext = path.extname(file.originalname).toLowerCase();
+    if (ext === '.pdf') {
+      cb(null, true);
+    } else {
+      cb(new Error('Solo se permiten archivos PDF'), false);
+    }
+  }
 });
 
-// Endpoint para manejar una solicitud a la API de Gemini
+// Ruta raíz
+app.get('/', (req, res) => {
+  res.send('¡Hola, bienvenido al servidor!');
+});
+
+// Endpoint para manejar la solicitud a la API de Gemini
 app.get('/api/gemini', async (req, res) => {
   try {
     const response = await axios.get('https://api.gemini.com/v1/symbols', {
       headers: {
         'X-GEMINI-APIKEY': process.env.GEMINI_API_KEY,
-        // Otros headers si es necesario
       },
     });
 
@@ -30,6 +54,9 @@ app.get('/api/gemini', async (req, res) => {
     res.status(500).json({ error: 'Hubo un problema al conectar con la API de Gemini' });
   }
 });
+
+// Endpoint para manejar la subida de archivos PDF
+app.post('/api/pdf', upload.single('pdf'), procesarPDF);
 
 // Iniciar el servidor
 app.listen(PORT, () => {
