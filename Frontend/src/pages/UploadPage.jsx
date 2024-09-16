@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Box, Button, Typography, Card, CardContent, Alert } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const UploadPage = ({ setSummary }) => {
   const [pdfUploaded, setPdfUploaded] = useState(false); // Estado para verificar si el PDF ha sido subido
@@ -48,26 +49,36 @@ const UploadPage = ({ setSummary }) => {
     }
   };
 
-  // Función para generar el resumen
-  const handleGenerateSummary = () => {
+  // Función para generar el resumen y enviar el PDF al backend
+  const handleGenerateSummary = async () => {
     if (!pdfUploaded) {
       setError("No se ha subido un archivo válido para generar el resumen.");
       return;
     }
 
     setLoading(true);
-    setTimeout(() => {
-      // Simulación de generación de resumen, podría manejar errores aquí
-      if (selectedFile.size > 0) {
-        const generatedSummary = "Este es un resumen simulado del PDF cargado.";
-        setSummary(generatedSummary); // Establecer el resumen en el estado de la aplicación
-        setLoading(false);
-        navigate("/resumen"); // Redirigir a la página de resumen
-      } else {
-        setError("Hubo un problema con el archivo. Intenta subir otro archivo.");
-        setLoading(false);
-      }
-    }, 2000);
+
+    // Crear un objeto FormData para enviar el archivo al backend
+    const formData = new FormData();
+    formData.append("pdf", selectedFile);
+
+    try {
+      // Enviar el PDF al backend y obtener el resumen
+      const response = await axios.post("/api/upload-pdf", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      // Obtener el resumen del backend y actualizar el estado
+      const generatedSummary = response.data.summary;
+      setSummary(generatedSummary); // Establecer el resumen en el estado de la aplicación
+      setLoading(false);
+      navigate("/resumen"); // Redirigir a la página de resumen
+    } catch (error) {
+      setError("Hubo un problema al procesar el archivo. Intenta de nuevo.");
+      setLoading(false);
+    }
   };
 
   return (
@@ -95,7 +106,7 @@ const UploadPage = ({ setSummary }) => {
               textAlign: "center",
               borderRadius: "8px",
               marginBottom: "20px",
-              backgroundColor: dragActive ? "#E3F2FD" : "transparent", 
+              backgroundColor: dragActive ? "#E3F2FD" : "transparent",
             }}
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}

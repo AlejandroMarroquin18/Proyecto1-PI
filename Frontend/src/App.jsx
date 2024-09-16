@@ -46,6 +46,11 @@ function App() {
                 path="/resumen"
                 element={<SummaryPage summary={summary} />}
               />
+              {/* Agregar ruta comodín para redirigir a UploadPage si la ruta no existe */}
+              <Route
+                path="*"
+                element={<UploadPage setSummary={setSummary} />}
+              />
             </Routes>
           </Box>
         </Box>

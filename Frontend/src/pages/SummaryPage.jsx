@@ -1,36 +1,48 @@
-import React from 'react';
-import { Box, Typography, Card, CardContent, Button } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+import React from "react";
+import { Box, Typography, Card, CardContent, Button } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 const SummaryPage = ({ summary }) => {
   const navigate = useNavigate();
 
-  const handleGoToInfoCards = () => {
-    navigate('/info-cards');  // Redirigir a la página de Info Cards
-  };
+  // Si no hay resumen, redirige al usuario de vuelta a la página de subida
+  if (!summary) {
+    navigate("/upload");
+  }
 
   return (
     <Box sx={{ flexGrow: 1, p: 3 }}>
       <Typography variant="h4" gutterBottom>
-        Resumen del PDF
+        Resumen Generado
       </Typography>
-      <Card sx={{ maxWidth: 800, margin: 'auto', textAlign: 'center', p: 4 }}>
+      <Card sx={{ backgroundColor: "#FEFEFE", maxWidth: 800, margin: "auto", p: 4 }}>
         <CardContent>
-          <Typography variant="body1" gutterBottom>
-            {summary ? summary : "Aquí se mostrará el resumen una vez el PDF sea procesado."}
+          <Typography variant="h6" gutterBottom>
+            Aquí tienes el resumen de tu archivo PDF:
           </Typography>
 
-          {/* Botón para redirigir a Info Cards */}
-          {summary && (
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={handleGoToInfoCards}
-              sx={{ mt: 3 }}
-            >
-              Ver Info Cards
-            </Button>
-          )}
+          <Box
+            sx={{
+              backgroundColor: "#F5F5F5",
+              padding: 2,
+              borderRadius: "8px",
+              maxHeight: "400px",
+              overflowY: "auto", // Habilita el scroll si el resumen es muy largo
+            }}
+          >
+            <Typography variant="body1" sx={{ whiteSpace: "pre-line" }}>
+              {summary}
+            </Typography>
+          </Box>
+
+          <Button
+            variant="contained"
+            color="primary"
+            sx={{ marginTop: 4 }}
+            onClick={() => navigate("/upload")} // Botón para subir otro archivo
+          >
+            Subir Otro PDF
+          </Button>
         </CardContent>
       </Card>
     </Box>
