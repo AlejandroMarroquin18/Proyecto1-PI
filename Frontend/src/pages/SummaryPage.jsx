@@ -1,24 +1,23 @@
 import React from "react";
-import { useLocation, useNavigate } from "react-router-dom";
 import { Box, Typography, Card, CardContent, Button } from "@mui/material";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const SummaryPage = () => {
   const navigate = useNavigate();
-  const location = useLocation(); // Acceder al estado pasado a través de la navegación
+  const location = useLocation();
 
-  // Obtener el resumen desde location.state
   const resumen = location.state?.ideasPrincipales?.resumen || [];
 
-  // Si no hay resumen en el estado, redirige al usuario de vuelta a la página de subida
-  if (!resumen.length) {
+  // Si no hay resumen, redirige al usuario de vuelta a la página de subida
+  if (!resumen.lenght) {
     navigate("/upload");
-    return null; // Aseguramos que la página no siga renderizando si no hay resumen
   }
 
   return (
     <Box sx={{ flexGrow: 1, p: 3 }}>
       <Typography variant="h4" gutterBottom>
         Resumen Generado
+        {/*resumen*/}
       </Typography>
       <Card sx={{ backgroundColor: "#FEFEFE", maxWidth: 800, margin: "auto", p: 4 }}>
         <CardContent>
