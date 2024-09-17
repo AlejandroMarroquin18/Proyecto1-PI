@@ -17,17 +17,9 @@ app.use(cors({
 // Middleware para manejar JSON en las solicitudes
 app.use(express.json());
 
-// Configuración de multer para subir archivos
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, 'uploads/');
-  },
-  filename: (req, file, cb) => {
-    cb(null, `${Date.now()}-${file.originalname}`);
-  },
-});
+// Configuración de multer para manejar los archivos en memoria
 const upload = multer({
-  storage: storage,
+  storage: multer.memoryStorage(),
   fileFilter: (req, file, cb) => {
     const ext = path.extname(file.originalname).toLowerCase();
     if (ext === '.pdf') {
