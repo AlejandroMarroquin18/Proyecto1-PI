@@ -7,6 +7,9 @@ dotenv.config();
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 async function extraerIdeasPrincipales(text) {
+  let ideas = []; // Inicializar ideas como un arreglo vacío
+  let questions = []; // Inicializar questions como un arreglo vacío
+
   try {
     console.log('Iniciando proceso para extraer ideas principales...');
     console.log('Texto recibido:', text);
@@ -22,15 +25,27 @@ async function extraerIdeasPrincipales(text) {
 
     Primera respuesta:
     Necesito que, luego de leer este texto, me des 3 ideas principales del mismo, en máximo 30 palabras.
-    Devuélveme estas ideas en formato:
+    Devuélve las ideas en formato incluyendo las llaves []:
 
-    [IDEA 1: *contenido de la idea.*][IDEA 2: *contenido de la idea.*][IDEA 3: contenido de la idea.*]
+    [*contenido de la idea 1*][*contenido de la idea 2*][*contenido de la idea 3*]
+
+    POR EJEMPLO:
+
+    [*El niño no jugaba*][*La niña no estaba*][*Los padres eran rusos*]
 
     Segunda respuesta:
 
     Luego de completar el primer paso, necesito que me des 3 preguntas, con 4 respuestas de opción múltiple.
-    Devuélvelas en este formato:
-    {PREGUNTA 1: *¿Pregunta 1?--a.Opción 1--b.Opción 2--c.Opción 3--d.Opción 4*}---{PREGUNTA 2: *¿Pregunta 2?--a.Opción 1--b.Opción 2--c.Opción 3--d.Opción 4*}---{PREGUNTA 3: *¿Pregunta 3?--a.Opción 1--b.Opción 2--c.Opción 3--d.Opción 4*}
+    Las preguntas y respuestas deberán estar en este formato:
+    {[¿Pregunta 1?] {a. Opción 1} {b. Opción 2} {c. Opción 3} {d. Opción 4}}
+    {[¿Pregunta 2?] {a. Opción 1} {b. Opción 2} {c. Opción 3} {d. Opción 4}}
+    {[¿Pregunta 3?] {a. Opción 1} {b. Opción 2} {c. Opción 3} {d. Opción 4}}
+
+    POR EJEMPLO:
+
+    {[¿De qué color es la sangre?] {a. Azul} {b. Roja} {c. Morada} {d. Verde}}
+    {[¿Cuantas letras tiene es abecedario?] {a. 18} {b. 28} {c. 33} {d. 30}}
+    {[¿Que animal es la mariposa?] {a. Insecto} {b. Arácnido} {c. Mamífero} {d. Volador}}
 
     Limita la creatividad y aumenta la precisión.
     `;
@@ -47,27 +62,32 @@ async function extraerIdeasPrincipales(text) {
 
     // Extraer ideas
     console.log('Extrayendo ideas...');
-    const ideasRegex = /\[IDEA \d+: \*(.*?)\*\]/g;
-    const ideas = [...responseText.matchAll(ideasRegex)].map(match => match[1]);
+    const ideasRegex = /\[\*(.*?)\*\]/g;
+    ideas = [...responseText.matchAll(ideasRegex)].map(match => match[1]);
     console.log('Ideas:', ideas);
 
-    // Extraer preguntas
+    // Extraer preguntas y opciones
     console.log('Extrayendo preguntas...');
-    const questionsRegex = /\{PREGUNTA \d+: \*(.+?)\*\}/g;
-    const questions = [...responseText.matchAll(questionsRegex)].map(match => {
-      const fullQuestion = match[1].split('--');
+    const questionsRegex = /\{\[¿(.+?)\?\]\s*\{a\.\s*(.+?)\}\s*\{b\.\s*(.+?)\}\s*\{c\.\s*(.+?)\}\s*\{d\.\s*(.+?)\}\}/g;
+    questions = [...responseText.matchAll(questionsRegex)].map(match => {
       return {
-        question: fullQuestion[0].trim(),
-        options: fullQuestion.slice(1).map(option => option.trim())
+        question: match[1].trim(),
+        options: {
+          a: match[2].trim(),
+          b: match[3].trim(),
+          c: match[4].trim(),
+          d: match[5].trim(),
+        }
       };
     });
     console.log('Preguntas:', questions);
 
-    return { ideas, questions };
-
   } catch (error) {
     console.error('Error extrayendo ideas principales:', error);
+    // Asegúrate de manejar el error de manera adecuada o de propagarlo
   }
+
+  return { ideas, questions }; // Devolver las ideas y preguntas independientemente de los errores
 }
 
 module.exports = { extraerIdeasPrincipales };
