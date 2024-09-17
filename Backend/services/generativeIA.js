@@ -1,44 +1,37 @@
+const { GoogleGenerativeAI } = require('@google/generative-ai');
 const dotenv = require('dotenv');
-const fetch = require('node-fetch'); 
 
 dotenv.config();
 
-const API_KEY = process.env.GOOGLE_API_KEY;
-const API_URL = 'https://generativelanguage.googleapis.com/v1beta2/models/gemini-pro:generateText';
+// Inicializar Gemini con la clave API
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
-// Función para extraer ideas principales utilizando la API directamente con fetch
 async function extraerIdeasPrincipales(text) {
-  const prompt = `Extrae las ideas principales del siguiente texto:\n${text}`;
-
   try {
-    // Configurar el cuerpo de la solicitud
-    const body = JSON.stringify({
-      prompt: {
-        text: prompt
-      }
-    });
+    console.log('Iniciando proceso para extraer ideas principales...');
+    console.log('Texto recibido:', text);
 
-    // Hacer la solicitud a la API de Google Generative Language
-    const response = await fetch(API_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${API_KEY}`
-      },
-      body: body
-    });
+    // Obtener el modelo generativo
+    console.log('Obteniendo el modelo generativo...');
+    const model = await genAI.getGenerativeModel({ model: 'gemini-pro' });
 
-    // Verificar si la respuesta es exitosa
-    if (!response.ok) {
-      throw new Error(`Error en la solicitud a la API: ${response.statusText}`);
-    }
+    // Crear un prompt para la IA con el texto extraído del PDF
+    const prompt = `Extrae las ideas principales del siguiente texto:\n${text}`;
+    console.log('Prompt creado:', prompt);
 
-    const data = await response.json();
+    // Enviar el prompt al modelo para generar contenido
+    console.log('Enviando prompt al modelo...');
+    const result = await model.generateContent(prompt);
 
-    // Retornar las ideas principales generadas por la API
-    return data.candidates[0].output;
+    // Revisar la respuesta
+    console.log('Respuesta recibida:', result);
+    const response = await result.response;
+    const ideas = response.text();
+    console.log('Ideas principales extraídas:', ideas);
+
+    return ideas;
   } catch (error) {
-    console.error('Error extrayendo ideas principales:', error);
+    console.error('Error extrayendo ideas principales:', error.response ? error.response.data : error.message);
     return 'Error extrayendo ideas principales del PDF';
   }
 }
