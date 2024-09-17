@@ -10,10 +10,18 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.use(cors({
-  origin: 'http://localhost:5173' // Solo permite solicitudes de este origen
-}));
+const whitelist = ['http://localhost:5173', 'https://proyecto1-pi-grrp.vercel.app', 'https://proyecto1-pi-two.vercel.app']; // Lista de dominios permitidos
+const corsOptions = {
+  origin: function (origin, callback) {
+    if (whitelist.indexOf(origin) !== -1 || !origin) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  }
+};
 
+app.use(cors(corsOptions));
 // Middleware para manejar JSON en las solicitudes
 app.use(express.json());
 
