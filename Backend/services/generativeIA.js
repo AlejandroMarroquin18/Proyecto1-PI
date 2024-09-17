@@ -24,7 +24,7 @@ async function extraerIdeasPrincipales(text) {
     Piensa que eres un estudiante y deseas repasar para un parcial. De acuerdo a esto, quiero que me devuelvas 2 respuestas:
 
     Primera respuesta:
-    Necesito que, luego de leer este texto, me des 3 ideas principales del mismo, en máximo 30 palabras.
+    Necesito que, luego de leer este texto, me des 3 ideas principales del mismo, en máximo 60 palabras.
     Devuélve las ideas en formato incluyendo las llaves []:
 
     [*contenido de la idea 1*][*contenido de la idea 2*][*contenido de la idea 3*]
@@ -35,18 +35,21 @@ async function extraerIdeasPrincipales(text) {
 
     Segunda respuesta:
 
-    Luego de completar el primer paso, necesito que me des un resumen del texto, no más de 2000 palabras, así:
-    (**resumen del texto de no más de dos mil palabras**)
+    Luego de completar el primer paso, necesito que me des un resumen del texto, no más de mil palabras, así:
+
+    (**resumen del texto de no más de mil palabras**)
 
     NO olvides los paréntesis ni los asteriscos, es de vital importancia para el programa.
 
-    POR EJEMPLO:
+    UN EJEMPLO DEL FORMATO DE RESUMEN ES EL SIGUIENTE:
 
     (**Me encontraba en el parque como de costumbre bajo un árbol. Miraba sus hojas interrumpiendo mi vista hacia el
     cielo casi despejado; podía sentir la brisa marina de la playa como si el mundo no tuviera prisa y las hojas
     cayéndose debido al otoño cercano tampoco tenían la recién nombrada. Pude sentir como la tierra me regalaba
     su amor y cariño con todo eso. Hasta que mi humor paso de feliz a irritable debido a que una persona se acercó
     a mi tapando el enriquecido calor del sol. Mire en diagonal hacia arriba viendo a mi hermana pequeña**)
+
+    RECUERDA EL EJEMPLO PARA HACER LOS RESÚMENES
 
     Limita la creatividad y aumenta la precisión.
     `;
