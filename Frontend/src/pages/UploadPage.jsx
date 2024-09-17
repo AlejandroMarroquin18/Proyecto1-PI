@@ -51,39 +51,39 @@ const UploadPage = ({ setSummary }) => {
 
   // Función para generar el resumen y enviar el PDF al backend
   const handleGenerateSummary = async () => {
-  if (!pdfUploaded) {
-    setError("No se ha subido un archivo válido para generar el resumen.");
-    return;
-  }
-
-  setLoading(true);
-
-  const formData = new FormData();
-  formData.append("pdf", selectedFile);
-
-  try {
-    // Enviar el PDF al backend y obtener las ideas principales
-    const response = await axios.post("http://localhost:3000/api/pdf", formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
-
-    // Asegúrate de que la respuesta contenga las ideas principales como se espera
-    if (response.data && response.data.ideasPrincipales) {
-      const ideasPrincipales = response.data.ideasPrincipales;
-      setSummary(ideasPrincipales); // Guardar las ideas principales en el estado
-      navigate("/info-cards", { state: { ideasPrincipales } }); // Pasar las ideas a la página siguiente
-    } else {
-      // Manejar la situación donde no se reciben ideas como esperado
-      setError("No se recibieron ideas del documento procesado.");
+    if (!pdfUploaded) {
+      setError("No se ha subido un archivo válido para generar el resumen.");
+      return;
     }
-  } catch (error) {
-    setError(`Hubo un problema al procesar el archivo. Intenta de nuevo: ${error.response ? error.response.data.message : error.message}`);
-  } finally {
-    setLoading(false);
-  }
-};
+
+    setLoading(true);
+
+    const formData = new FormData();
+    formData.append("pdf", selectedFile);
+
+    try {
+      // Enviar el PDF al backend y obtener las ideas principales
+      const response = await axios.post("http://localhost:3000/api/pdf", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      // Asegúrate de que la respuesta contenga las ideas principales como se espera
+      if (response.data && response.data.ideasPrincipales) {
+        const ideasPrincipales = response.data.ideasPrincipales;
+        setSummary(ideasPrincipales); // Guardar las ideas principales en el estado
+        navigate("/resumen", { state: { ideasPrincipales } }); // Pasar las ideas a la página siguiente
+      } else {
+        // Manejar la situación donde no se reciben ideas como esperado
+        setError("No se recibieron ideas del documento procesado.");
+      }
+    } catch (error) {
+      setError(`Hubo un problema al procesar el archivo. Intenta de nuevo: ${error.response ? error.response.data.message : error.message}`);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <Box sx={{ flexGrow: 1, p: 3 }}>

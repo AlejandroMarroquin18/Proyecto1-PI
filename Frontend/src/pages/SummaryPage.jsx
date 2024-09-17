@@ -1,13 +1,18 @@
 import React from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Box, Typography, Card, CardContent, Button } from "@mui/material";
-import { useNavigate } from "react-router-dom";
 
-const SummaryPage = ({ summary }) => {
+const SummaryPage = () => {
   const navigate = useNavigate();
+  const location = useLocation(); // Acceder al estado pasado a través de la navegación
 
-  // Si no hay resumen, redirige al usuario de vuelta a la página de subida
-  if (!summary) {
+  // Obtener el resumen desde location.state
+  const resumen = location.state?.ideasPrincipales?.resumen || [];
+
+  // Si no hay resumen en el estado, redirige al usuario de vuelta a la página de subida
+  if (!resumen.length) {
     navigate("/upload");
+    return null; // Aseguramos que la página no siga renderizando si no hay resumen
   }
 
   return (
@@ -30,9 +35,15 @@ const SummaryPage = ({ summary }) => {
               overflowY: "auto", // Habilita el scroll si el resumen es muy largo
             }}
           >
-            <Typography variant="body1" sx={{ whiteSpace: "pre-line" }}>
-              {summary}
-            </Typography>
+            {resumen.length > 0 ? (
+              resumen.map((parrafo, index) => (
+                <Typography key={index} variant="body1" paragraph sx={{ whiteSpace: "pre-line" }}>
+                  {parrafo}
+                </Typography>
+              ))
+            ) : (
+              <Typography variant="body1">No hay resumen disponible.</Typography>
+            )}
           </Box>
 
           <Button
