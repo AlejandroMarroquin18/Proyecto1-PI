@@ -3,11 +3,16 @@ const { procesarPDF } = require('./controllers/pdfController');  // Controlador 
 const multer = require('multer');
 const dotenv = require('dotenv');
 const path = require('path');
+const cors = require('cors');
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+app.use(cors({
+  origin: 'http://localhost:5173' // Solo permite solicitudes de este origen
+}));
 
 // Middleware para manejar JSON en las solicitudes
 app.use(express.json());
