@@ -64,7 +64,7 @@ const UploadPage = ({ setSummary }) => {
 
     try {
       // Enviar el PDF al backend y obtener el resumen
-      const response = await axios.post("/api/upload-pdf", formData, {
+      const response = await axios.post("http://localhost:3000/api/pdf", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
