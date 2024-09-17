@@ -63,7 +63,7 @@ const UploadPage = ({ setSummary }) => {
 
   try {
     // Enviar el PDF al backend y obtener las ideas principales
-    const response = await axios.post("http://localhost:3000/api/pdf", formData, {
+    const response = await axios.post("https://proyecto1-pi-two.vercel.app/api/pdf", formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
