@@ -8,7 +8,7 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 async function extraerIdeasPrincipales(text) {
   let ideas = []; // Inicializar ideas como un arreglo vacío
-  let questions = []; // Inicializar questions como un arreglo vacío
+  let resumen = []; // Inicializar resumen como un arreglo vacío
 
   try {
     console.log('Iniciando proceso para extraer ideas principales...');
@@ -35,17 +35,18 @@ async function extraerIdeasPrincipales(text) {
 
     Segunda respuesta:
 
-    Luego de completar el primer paso, necesito que me des 3 preguntas, con 4 respuestas de opción múltiple.
-    Las preguntas y respuestas deberán estar en este formato:
-    {[¿Pregunta 1?] {a. Opción 1} {b. Opción 2} {c. Opción 3} {d. Opción 4}}
-    {[¿Pregunta 2?] {a. Opción 1} {b. Opción 2} {c. Opción 3} {d. Opción 4}}
-    {[¿Pregunta 3?] {a. Opción 1} {b. Opción 2} {c. Opción 3} {d. Opción 4}}
+    Luego de completar el primer paso, necesito que me des un resumen del texto, no más de 2000 palabras, así:
+    (**resumen del texto de no más de dos mil palabras**)
+
+    NO olvides los paréntesis ni los asteriscos, es de vital importancia para el programa.
 
     POR EJEMPLO:
 
-    {[¿De qué color es la sangre?] {a. Azul} {b. Roja} {c. Morada} {d. Verde}}
-    {[¿Cuantas letras tiene es abecedario?] {a. 18} {b. 28} {c. 33} {d. 30}}
-    {[¿Que animal es la mariposa?] {a. Insecto} {b. Arácnido} {c. Mamífero} {d. Volador}}
+    (**Me encontraba en el parque como de costumbre bajo un árbol. Miraba sus hojas interrumpiendo mi vista hacia el
+    cielo casi despejado; podía sentir la brisa marina de la playa como si el mundo no tuviera prisa y las hojas
+    cayéndose debido al otoño cercano tampoco tenían la recién nombrada. Pude sentir como la tierra me regalaba
+    su amor y cariño con todo eso. Hasta que mi humor paso de feliz a irritable debido a que una persona se acercó
+    a mi tapando el enriquecido calor del sol. Mire en diagonal hacia arriba viendo a mi hermana pequeña**)
 
     Limita la creatividad y aumenta la precisión.
     `;
@@ -66,28 +67,18 @@ async function extraerIdeasPrincipales(text) {
     ideas = [...responseText.matchAll(ideasRegex)].map(match => match[1]);
     console.log('Ideas:', ideas);
 
-    // Extraer preguntas y opciones
-    console.log('Extrayendo preguntas...');
-    const questionsRegex = /\{\[¿(.+?)\?\]\s*\{a\.\s*(.+?)\}\s*\{b\.\s*(.+?)\}\s*\{c\.\s*(.+?)\}\s*\{d\.\s*(.+?)\}\}/g;
-    questions = [...responseText.matchAll(questionsRegex)].map(match => {
-      return {
-        question: match[1].trim(),
-        options: {
-          a: match[2].trim(),
-          b: match[3].trim(),
-          c: match[4].trim(),
-          d: match[5].trim(),
-        }
-      };
-    });
-    console.log('Preguntas:', questions);
+     // Extraer resumen
+     console.log('Extrayendo resumen...');
+     const resumenRegex = /\(\*\*(.*?)\*\*\)/g;
+     resumen = [...responseText.matchAll(resumenRegex)].map(match => match[1]);
+     console.log('Resumen:', resumen);
 
   } catch (error) {
     console.error('Error extrayendo ideas principales:', error);
     // Asegúrate de manejar el error de manera adecuada o de propagarlo
   }
 
-  return { ideas, questions }; // Devolver las ideas y preguntas independientemente de los errores
+  return { ideas, resumen }; // Devolver las ideas resumen
 }
 
 module.exports = { extraerIdeasPrincipales };
